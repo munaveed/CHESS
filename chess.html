@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>N-Queens Visualizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .board {
+      display: grid;
+      margin-top: 20px;
+      border: 2px solid #333;
+    }
+    .cell {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 36px;
+    }
+    .black {
+      background: #769656;
+    }
+    .white {
+      background: #eeeed2;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      background: #333;
+      color: white;
+    }
+    button:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>4 Queens Puzzle on a 4x4 Chess Board</h1>
+  <div id="board" class="board"></div>
+  <button id="nextBtn">Next Solution</button>
+  <p id="counter"></p>
+
+  <script>
+    const N = 4;
+    const solutions = [];
+    let currentIndex = 0;
+
+    function isSafe(board, row, col) {
+      for (let i = 0; i < row; i++) {
+        if (board[i] === col ||
+            board[i] - i === col - row ||
+            board[i] + i === col + row) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function solve(row, board) {
+      if (row === N) {
+        solutions.push([...board]);
+        return;
+      }
+      for (let col = 0; col < N; col++) {
+        if (isSafe(board, row, col)) {
+          board[row] = col;
+          solve(row + 1, board);
+        }
+      }
+    }
+
+    function drawBoard(solution) {
+      const boardDiv = document.getElementById("board");
+      boardDiv.style.gridTemplateColumns = `repeat(${N}, 60px)`;
+      boardDiv.style.gridTemplateRows = `repeat(${N}, 60px)`;
+      boardDiv.innerHTML = "";
+
+      for (let row = 0; row < N; row++) {
+        for (let col = 0; col < N; col++) {
+          const cell = document.createElement("div");
+          cell.className = "cell " + ((row + col) % 2 === 0 ? "white" : "black");
+          if (solution[row] === col) {
+            cell.textContent = "♛";
+          }
+          boardDiv.appendChild(cell);
+        }
+      }
+      document.getElementById("counter").textContent =
+        `Solution ${currentIndex + 1} of ${solutions.length}`;
+    }
+
+    // Solve once at the start
+    solve(0, []);
+
+    // Show the first solution
+    if (solutions.length > 0) {
+      drawBoard(solutions[0]);
+    }
+
+    // Button to cycle through
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % solutions.length;
+      drawBoard(solutions[currentIndex]);
+    });
+  </script>
+
+  <!-- Remarks: paste this below the counter element -->
+<style>
+  .remarks {
+    max-width: 760px;
+    margin-top: 18px;
+    background: #f7f7fb;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid #e3e3ea;
+    font-size: 15px;
+    line-height: 1.45;
+    color: #111;
+  }
+  .remarks h2 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+  }
+  .remarks p { margin: 6px 0; }
+</style>
+
+<div id="remarks" class="remarks" aria-live="polite">
+  <h2>Personal Note</h2>
+  <p>
+    This was originally my <strong>lab assignment for a Data Structures class</strong>, where I implemented
+    the N-Queens problem using backtracking. I got bored of printing 1s and 0s to the console, so I decided to
+    <strong>play with it using HTML, CSS, and JavaScript</strong> to create this visualizer.
+  </p>
+  <p>
+    Instead of raw arrays, you can now see queens placed on the chessboard and
+    cycle through all valid solutions. 
+  </p>
+</div>
+
+</body>
+</html>
